@@ -15,7 +15,7 @@ A one-click [Railway](https://railway.com) template for [PatchMon](https://githu
 | `Redis` | Railway's Redis | Job queue, agent presence, rate limits | no | Railway volume |
 
 - The PatchMon service builds from this repository, so Railway tells deployers when a new version is merged here.
-- [`railway-start.sh`](railway-start.sh) sets `CORS_ORIGIN` to the Railway public domain, refuses to start without `DATABASE_URL`, `JWT_SECRET` or `SESSION_SECRET`, makes the volume writable and then runs PatchMon as the image's non-root user.
+- [`railway-start.sh`](railway-start.sh) adds the Railway public domain and Railway's health-check host to `CORS_ORIGIN` (PatchMon also uses it as its Host allow-list), refuses to start without `DATABASE_URL`, `JWT_SECRET` or `SESSION_SECRET`, makes the volume writable and then runs PatchMon as the image's non-root user.
 - Database migrations run automatically on every start.
 - Health check: `/health` (checks Postgres and Redis, no login).
 
@@ -30,7 +30,7 @@ A one-click [Railway](https://railway.com) template for [PatchMon](https://githu
 | `AI_ENCRYPTION_KEY` | random, 64 hex characters | Encrypts stored secrets (bootstrap tokens, notification credentials, AI keys). Keep it: changing it makes those values unreadable |
 | `PORT` | `3000` | Port PatchMon listens on |
 
-There is nothing to fill in. Fixed defaults (`TZ=UTC`, `PATCHMON_SSH_KNOWN_HOSTS=/data/ssh/known_hosts`) are set in the `Dockerfile`. Any other [PatchMon setting](https://github.com/PatchMon/PatchMon/blob/main/docker/env.example) (OIDC single sign-on, password policy, rate limits, `TZ`) can be added as a service variable. With a custom domain, set `CORS_ORIGIN=https://your-domain` (comma-separate several origins).
+There is nothing to fill in. Fixed defaults (`TZ=UTC`, `PATCHMON_SSH_KNOWN_HOSTS=/data/ssh/known_hosts`) are set in the `Dockerfile`. Any other [PatchMon setting](https://github.com/PatchMon/PatchMon/blob/main/docker/env.example) (OIDC single sign-on, password policy, rate limits, `TZ`) can be added as a service variable. With a custom domain, set `CORS_ORIGIN=https://your-domain` (comma-separate several); the Railway domain stays allowed.
 
 ## After deploying
 

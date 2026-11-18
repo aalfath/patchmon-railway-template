@@ -11,10 +11,25 @@ export REDIS_HOST="${REDIS_HOST:-${REDISHOST:-}}"
 export REDIS_PORT="${REDIS_PORT:-${REDISPORT:-6379}}"
 export REDIS_PASSWORD="${REDIS_PASSWORD:-${REDISPASSWORD:-}}"
 
-# The browser origin PatchMon accepts: the Railway public domain unless set.
-if [ -z "${CORS_ORIGIN:-}" ] && [ -n "${RAILWAY_PUBLIC_DOMAIN:-}" ]; then
-  export CORS_ORIGIN="https://${RAILWAY_PUBLIC_DOMAIN}"
-fi
+# CORS_ORIGIN is also PatchMon's Host allow-list: requests for any other host
+# get 403. Keep a deployer-set value (custom domain) first, then add the
+# Railway public domain and Railway's health-check host, which probes /health
+# with "Host: healthcheck.railway.app".
+add_origin() {
+  case ",${CORS_ORIGIN:-}," in
+    *",$1,"*) ;;
+    ",,") CORS_ORIGIN="$1" ;;
+    *) CORS_ORIGIN="${CORS_ORIGIN},$1" ;;
+  esac
+}
+case "${CORS_ORIGIN:-}" in
+  "*") ;;
+  *)
+    [ -n "${RAILWAY_PUBLIC_DOMAIN:-}" ] && add_origin "https://${RAILWAY_PUBLIC_DOMAIN}"
+    add_origin "http://healthcheck.railway.app"
+    ;;
+esac
+export CORS_ORIGIN
 
 # A stable identity for the agent presence registry in Redis (upstream's
 # compose file pins the hostname for the same reason).
