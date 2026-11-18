@@ -15,7 +15,7 @@ A one-click [Railway](https://railway.com) template for [PatchMon](https://githu
 | `Redis` | Railway's Redis | Job queue, agent presence, rate limits | no | Railway volume |
 
 - The PatchMon service builds from this repository, so Railway tells deployers when a new version is merged here.
-- [`railway-start.sh`](railway-start.sh) maps Railway's Redis variables to PatchMon's, sets `CORS_ORIGIN` to the Railway public domain, refuses to start without `DATABASE_URL`, `JWT_SECRET` or `SESSION_SECRET`, makes the volume writable and then runs PatchMon as the image's non-root user.
+- [`railway-start.sh`](railway-start.sh) sets `CORS_ORIGIN` to the Railway public domain, refuses to start without `DATABASE_URL`, `JWT_SECRET` or `SESSION_SECRET`, makes the volume writable and then runs PatchMon as the image's non-root user.
 - Database migrations run automatically on every start.
 - Health check: `/health` (checks Postgres and Redis, no login).
 
@@ -24,7 +24,7 @@ A one-click [Railway](https://railway.com) template for [PatchMon](https://githu
 | Variable | Value | Notes |
 |---|---|---|
 | `DATABASE_URL` | `${{Postgres.DATABASE_URL}}` | Private-network connection to Postgres |
-| `REDISHOST`, `REDISPORT`, `REDISPASSWORD` | references to the Redis service | Private-network connection to Redis |
+| `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` | references to the Redis service | Private-network connection to Redis |
 | `JWT_SECRET` | random, 64 characters | Signs login tokens |
 | `SESSION_SECRET` | random, 64 characters | Session and fallback encryption secret |
 | `AI_ENCRYPTION_KEY` | random, 64 hex characters | Encrypts stored secrets (bootstrap tokens, notification credentials, AI keys). Keep it: changing it makes those values unreadable |
